@@ -1,5 +1,6 @@
 package com.minhnpa.coderschool.newyorktimesarticlesearch.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +34,12 @@ public class MainActivity extends AppCompatActivity {
     private ArticleAdapter mArticleAdapter;
     private StaggeredGridLayoutManager mLayoutManager;
     private SearchView mSearchView;
+    private String sort = "Newest";
+    private boolean filterArts = false;
+    private boolean filterFashionStyle = false;
+    private boolean filterSports = false;
+
+    public final int REQUEST_FILTER = 9001;
 
     @BindView(R.id.rvArticle)
     RecyclerView rvArticle;
@@ -165,9 +172,34 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_sort:
-                Toast.makeText(this, "Sort", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, FilterActivity.class);
+                Bundle bundle = new Bundle();
+
+                bundle.putString("sort", sort);
+                bundle.putBoolean("filter_arts", filterArts);
+                bundle.putBoolean("filter_fashion_style", filterFashionStyle);
+                bundle.putBoolean("filter_sports", filterSports);
+
+                intent.putExtras(bundle);
+                startActivityForResult(intent, REQUEST_FILTER);
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_FILTER && resultCode == RESULT_OK) {
+            sort = data.getExtras().getString("sorted");
+            filterArts = data.getExtras().getBoolean("filtered_arts");
+            filterFashionStyle = data.getExtras().getBoolean("filtered_fashion_style");
+            filterSports = data.getExtras().getBoolean("filtered_sports");
+
+            mSearchRequest.setSort(sort);
+            mSearchRequest.setFilterArts(filterArts);
+            mSearchRequest.setFilterFashionStyle(filterFashionStyle);
+            mSearchRequest.setFilterSports(filterSports);
+            search();
+        }
     }
 }

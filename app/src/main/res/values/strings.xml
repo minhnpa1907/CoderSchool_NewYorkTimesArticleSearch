@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">New York Times Article Search</string>
+
+    <string-array name="sort_order">
+        <item>Newest</item>
+        <item>Oldest</item>
+    </string-array>
 </resources>
