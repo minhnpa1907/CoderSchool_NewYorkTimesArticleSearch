@@ -1,10 +1,14 @@
 package com.minhnpa.coderschool.newyorktimesarticlesearch.adapter;
 
-
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,14 +16,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.minhnpa.coderschool.newyorktimesarticlesearch.R;
-import com.minhnpa.coderschool.newyorktimesarticlesearch.activity.FullArticleActivity;
-import com.minhnpa.coderschool.newyorktimesarticlesearch.activity.MainActivity;
 import com.minhnpa.coderschool.newyorktimesarticlesearch.model.Article;
-import com.minhnpa.coderschool.newyorktimesarticlesearch.model.HeadLine;
 import com.minhnpa.coderschool.newyorktimesarticlesearch.model.Media;
 import com.minhnpa.coderschool.newyorktimesarticlesearch.utils.UIUtils;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +97,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         layoutParams.height = UIUtils.covertPixelToDp(media.getHeight(),
                 holder.itemView.getContext());
         holder.ivCover.setLayoutParams(layoutParams);
-        Picasso.with(holder.itemView.getContext())
+        Glide.with(holder.itemView.getContext())
                 .load(media.getUrl())
                 .into(holder.ivCover);
     }
@@ -128,29 +129,37 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         TextView tvContent;
 
         private Context context;
+        private Bitmap bitmap;
+        int requestCode = 100;
 
         ViewHolder(Context context, View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             this.context = context;
 
+            bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_action_share);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            if (position != RecyclerView.NO_POSITION) { // Check if an item was deleted, but the user clicked it before the UI removed it
+            if (position != RecyclerView.NO_POSITION) {
                 Article article = mArticles.get(position);
-                HeadLine headLine = article.getHeadline();
-                Intent intent = new Intent(context, FullArticleActivity.class);
-                Bundle bundle = new Bundle();
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
 
-                bundle.putString("headline", headLine.getMain());
-                bundle.putString("web_url", article.getWebUrl());
+                intent.putExtra(Intent.EXTRA_TEXT, "share");
 
-                intent.putExtras(bundle);
-                context.startActivity(intent);
+                PendingIntent pendingIntent = PendingIntent.getActivity(context,
+                        requestCode,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                builder.setToolbarColor(ContextCompat.getColor(context, R.color.colorAccent));
+                builder.setActionButton(bitmap, "Share Link", pendingIntent, true);
+                CustomTabsIntent customTabsIntent = builder.build();
+                customTabsIntent.launchUrl((Activity) context, Uri.parse(article.getWebUrl()));
             }
         }
     }
@@ -160,29 +169,37 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         TextView tvContent;
 
         private Context context;
+        private Bitmap bitmap;
+        int requestCode = 100;
 
         NoCoverViewHolder(Context context, View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             this.context = context;
 
+            bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_action_share);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            if (position != RecyclerView.NO_POSITION) { // Check if an item was deleted, but the user clicked it before the UI removed it
+            if (position != RecyclerView.NO_POSITION) {
                 Article article = mArticles.get(position);
-                HeadLine headLine = article.getHeadline();
-                Intent intent = new Intent(context, FullArticleActivity.class);
-                Bundle bundle = new Bundle();
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
 
-                bundle.putString("headline", headLine.getMain());
-                bundle.putString("web_url", article.getWebUrl());
+                intent.putExtra(Intent.EXTRA_TEXT, "share");
 
-                intent.putExtras(bundle);
-                context.startActivity(intent);
+                PendingIntent pendingIntent = PendingIntent.getActivity(context,
+                        requestCode,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                builder.setToolbarColor(ContextCompat.getColor(context, R.color.colorAccent));
+                builder.setActionButton(bitmap, "Share Link", pendingIntent, true);
+                CustomTabsIntent customTabsIntent = builder.build();
+                customTabsIntent.launchUrl((Activity) context, Uri.parse(article.getWebUrl()));
             }
         }
     }

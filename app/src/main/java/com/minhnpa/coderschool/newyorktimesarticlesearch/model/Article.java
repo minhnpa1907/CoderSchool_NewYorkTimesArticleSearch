@@ -17,14 +17,10 @@ public class Article implements Parcelable {
     @SerializedName("multimedia")
     private List<Media> multimedia;
 
-    @SerializedName("headline")
-    private HeadLine headline;
-
     private Article(Parcel in) {
         webUrl = in.readString();
         snippet = in.readString();
         multimedia = in.createTypedArrayList(Media.CREATOR);
-        headline = in.readParcelable(HeadLine.class.getClassLoader());
     }
 
     public static final Creator<Article> CREATOR = new Creator<Article>() {
@@ -49,7 +45,6 @@ public class Article implements Parcelable {
         dest.writeString(webUrl);
         dest.writeString(snippet);
         dest.writeTypedList(multimedia);
-        dest.writeParcelable(headline, flags);
     }
 
     public String getWebUrl() {
@@ -62,9 +57,5 @@ public class Article implements Parcelable {
 
     public List<Media> getMultimedia() {
         return multimedia;
-    }
-
-    public HeadLine getHeadline() {
-        return headline;
     }
 }

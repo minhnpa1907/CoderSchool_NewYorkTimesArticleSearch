@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:onClick="setDate"
+            android:paddingLeft="8dp"
             android:textColor="@android:color/black"
             tools:text="12/31/2016" />
 
@@ -73,7 +74,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="2"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingLeft="2dp">
 
             <CheckBox
                 android:id="@+id/cbArts"

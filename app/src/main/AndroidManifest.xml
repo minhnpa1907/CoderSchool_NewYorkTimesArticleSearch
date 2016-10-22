@@ -3,6 +3,7 @@
     package="com.minhnpa.coderschool.newyorktimesarticlesearch">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -21,9 +22,6 @@
         <activity
             android:name=".activity.FilterActivity"
             android:theme="@style/DialogNoTitleBar" />
-        <activity
-            android:name=".activity.FullArticleActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

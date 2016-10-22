@@ -1,6 +1,9 @@
 package com.minhnpa.coderschool.newyorktimesarticlesearch.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private int day = 21;
     private int month = 6;
     private int year = 2015;
+    private boolean networkConnected;
 
     public final int REQUEST_FILTER = 9001;
 
@@ -65,19 +69,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        setUpApi();
-        setUpViews();
-        search();
+        networkConnected = isNetworkAvailable();
+        if (networkConnected) {
+            setUpApi();
+            setUpViews();
+            search();
+        } else {
+            Toast.makeText(this, "Can't connect to the network", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void setUpViews() {
         mArticleAdapter = new ArticleAdapter();
-        mArticleAdapter.setListener(new ArticleAdapter.Listener() {
-            @Override
-            public void onLoadMore() {
-                searchMore();
-            }
-        });
+        mArticleAdapter.setListener(this::searchMore);
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         rvArticle.setLayoutManager(mLayoutManager);
@@ -93,24 +97,16 @@ public class MainActivity extends AppCompatActivity {
     private void search() {
         mSearchRequest.resetPage();
         pbLoading.setVisibility(View.VISIBLE);
-        fetchArticles(new Listener() {
-            @Override
-            public void onResult(SearchResult searchResult) {
-                mArticleAdapter.setArticle(searchResult.getArticles());
-                rvArticle.scrollToPosition(0);
-            }
+        fetchArticles(searchResult -> {
+            mArticleAdapter.setArticle(searchResult.getArticles());
+            rvArticle.scrollToPosition(0);
         });
     }
 
     private void searchMore() {
         mSearchRequest.nextPage();
         pbLoadMore.setVisibility(View.VISIBLE);
-        fetchArticles(new Listener() {
-            @Override
-            public void onResult(SearchResult searchResult) {
-                mArticleAdapter.addArticle(searchResult.getArticles());
-            }
-        });
+        fetchArticles(searchResult -> mArticleAdapter.addArticle(searchResult.getArticles()));
     }
 
 
@@ -227,5 +223,12 @@ public class MainActivity extends AppCompatActivity {
             mSearchRequest.setFilterSports(filterSports);
             search();
         }
+    }
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 }
