@@ -22,6 +22,8 @@ import com.minhnpa.coderschool.newyorktimesarticlesearch.model.SearchRequest;
 import com.minhnpa.coderschool.newyorktimesarticlesearch.model.SearchResult;
 import com.minhnpa.coderschool.newyorktimesarticlesearch.utils.RetrofitUtils;
 
+import java.util.Calendar;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
@@ -38,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean filterArts = false;
     private boolean filterFashionStyle = false;
     private boolean filterSports = false;
+    private int day = 21;
+    private int month = 6;
+    private int year = 2015;
 
     public final int REQUEST_FILTER = 9001;
 
@@ -59,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
         setUpApi();
         setUpViews();
         search();
@@ -76,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         rvArticle.setLayoutManager(mLayoutManager);
         rvArticle.setAdapter(mArticleAdapter);
+
     }
 
     private void setUpApi() {
@@ -175,6 +182,9 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, FilterActivity.class);
                 Bundle bundle = new Bundle();
 
+                bundle.putInt("day", day);
+                bundle.putInt("month", month);
+                bundle.putInt("year", year);
                 bundle.putString("sort", sort);
                 bundle.putBoolean("filter_arts", filterArts);
                 bundle.putBoolean("filter_fashion_style", filterFashionStyle);
@@ -190,11 +200,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_FILTER && resultCode == RESULT_OK) {
+            day = data.getExtras().getInt("day_picked");
+            month = data.getExtras().getInt("month_picked");
+            year = data.getExtras().getInt("year_picked");
             sort = data.getExtras().getString("sorted");
             filterArts = data.getExtras().getBoolean("filtered_arts");
             filterFashionStyle = data.getExtras().getBoolean("filtered_fashion_style");
             filterSports = data.getExtras().getBoolean("filtered_sports");
 
+            StringBuilder date = new StringBuilder();
+            date.append(year);
+            if (month < 10) {
+                date.append("0").append(month);
+            } else {
+                date.append(month);
+            }
+            if (day < 10) {
+                date.append("0").append(day);
+            } else {
+                date.append(day);
+            }
+            mSearchRequest.setBeginDate(date.toString());
             mSearchRequest.setSort(sort);
             mSearchRequest.setFilterArts(filterArts);
             mSearchRequest.setFilterFashionStyle(filterFashionStyle);

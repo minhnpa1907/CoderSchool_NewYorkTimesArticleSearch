@@ -21,6 +21,9 @@
         <activity
             android:name=".activity.FilterActivity"
             android:theme="@style/DialogNoTitleBar" />
+        <activity
+            android:name=".activity.FullArticleActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

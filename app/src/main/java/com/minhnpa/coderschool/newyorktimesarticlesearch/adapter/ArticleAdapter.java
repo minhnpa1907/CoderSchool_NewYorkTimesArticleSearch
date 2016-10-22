@@ -1,6 +1,10 @@
 package com.minhnpa.coderschool.newyorktimesarticlesearch.adapter;
 
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.minhnpa.coderschool.newyorktimesarticlesearch.R;
+import com.minhnpa.coderschool.newyorktimesarticlesearch.activity.FullArticleActivity;
+import com.minhnpa.coderschool.newyorktimesarticlesearch.activity.MainActivity;
 import com.minhnpa.coderschool.newyorktimesarticlesearch.model.Article;
+import com.minhnpa.coderschool.newyorktimesarticlesearch.model.HeadLine;
 import com.minhnpa.coderschool.newyorktimesarticlesearch.model.Media;
 import com.minhnpa.coderschool.newyorktimesarticlesearch.utils.UIUtils;
 import com.squareup.picasso.Picasso;
@@ -61,11 +68,11 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case UNNORMAL:
                 itemView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_article_no_cover, parent, false);
-                return new NoCoverViewHolder(itemView);
+                return new NoCoverViewHolder(parent.getContext(), itemView);
             default:
                 itemView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_article, parent, false);
-                return new ViewHolder(itemView);
+                return new ViewHolder(parent.getContext(), itemView);
         }
     }
 
@@ -113,26 +120,70 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return mArticles.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.ivCover)
         ImageView ivCover;
 
         @BindView(R.id.tvContent)
         TextView tvContent;
 
-        ViewHolder(View itemView) {
+        private Context context;
+
+        ViewHolder(Context context, View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            this.context = context;
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) { // Check if an item was deleted, but the user clicked it before the UI removed it
+                Article article = mArticles.get(position);
+                HeadLine headLine = article.getHeadline();
+                Intent intent = new Intent(context, FullArticleActivity.class);
+                Bundle bundle = new Bundle();
+
+                bundle.putString("headline", headLine.getMain());
+                bundle.putString("web_url", article.getWebUrl());
+
+                intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
         }
     }
 
-    public class NoCoverViewHolder extends RecyclerView.ViewHolder {
+    public class NoCoverViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.tvContent)
         TextView tvContent;
 
-        NoCoverViewHolder(View itemView) {
+        private Context context;
+
+        NoCoverViewHolder(Context context, View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            this.context = context;
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) { // Check if an item was deleted, but the user clicked it before the UI removed it
+                Article article = mArticles.get(position);
+                HeadLine headLine = article.getHeadline();
+                Intent intent = new Intent(context, FullArticleActivity.class);
+                Bundle bundle = new Bundle();
+
+                bundle.putString("headline", headLine.getMain());
+                bundle.putString("web_url", article.getWebUrl());
+
+                intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
         }
     }
 }
