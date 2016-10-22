@@ -31,7 +31,7 @@ public class Media implements Parcelable {
     };
 
     public String getUrl() {
-        return Constant.BASE_URL + url;
+        return Constant.IMAGE_URL + url;
     }
 
     public int getHeight() {

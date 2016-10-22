@@ -46,7 +46,7 @@ public class SearchRequest implements Parcelable {
 
     public Map<String, String> toQueryMap() {
         Map<String, String> options = new HashMap<>();
-        if (null != query) options.put("query", query);
+        if (null != query) options.put("q", query);
         if (null != beginDate) options.put("beginDate", beginDate);
         if (null != sort) options.put("sort", sort);
         if (null != getNewDesk()) options.put("fq", "news_desk:(" + getNewDesk() + ")");
