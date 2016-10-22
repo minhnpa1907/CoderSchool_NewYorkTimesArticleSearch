@@ -22,7 +22,7 @@ public class SearchRequest implements Parcelable {
     public SearchRequest() {
     }
 
-    protected SearchRequest(Parcel in) {
+    private SearchRequest(Parcel in) {
         query = in.readString();
         beginDate = in.readString();
         sort = in.readString();
@@ -137,5 +137,13 @@ public class SearchRequest implements Parcelable {
 
     public void setFilterSports(boolean filterSports) {
         this.filterSports = filterSports;
+    }
+
+    public void resetPage() {
+        page = 0;
+    }
+
+    public void nextPage() {
+        page++;
     }
 }

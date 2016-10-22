@@ -5,14 +5,14 @@ import android.os.Parcelable;
 
 import com.minhnpa.coderschool.newyorktimesarticlesearch.utils.Constant;
 
+import static android.R.attr.width;
+
 public class Media implements Parcelable {
-    private int width;
     private String url;
     private int height;
     private String type;
 
-    protected Media(Parcel in) {
-        width = in.readInt();
+    private Media(Parcel in) {
         url = in.readString();
         height = in.readInt();
         type = in.readString();
@@ -29,10 +29,6 @@ public class Media implements Parcelable {
             return new Media[size];
         }
     };
-
-    public int getWidth() {
-        return width;
-    }
 
     public String getUrl() {
         return Constant.BASE_URL + url;

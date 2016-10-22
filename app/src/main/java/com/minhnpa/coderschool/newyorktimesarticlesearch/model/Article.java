@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Article implements Parcelable{
+public class Article implements Parcelable {
     @SerializedName("web_url")
     private String webUrl;
 
@@ -17,7 +17,7 @@ public class Article implements Parcelable{
     @SerializedName("multimedia")
     private List<Media> multimedia;
 
-    protected Article(Parcel in) {
+    private Article(Parcel in) {
         webUrl = in.readString();
         snippet = in.readString();
         multimedia = in.createTypedArrayList(Media.CREATOR);
@@ -45,5 +45,17 @@ public class Article implements Parcelable{
         dest.writeString(webUrl);
         dest.writeString(snippet);
         dest.writeTypedList(multimedia);
+    }
+
+    public String getWebUrl() {
+        return webUrl;
+    }
+
+    public String getSnippet() {
+        return snippet;
+    }
+
+    public List<Media> getMultimedia() {
+        return multimedia;
     }
 }
