@@ -1,23 +1,20 @@
 package com.minhnpa.coderschool.newyorktimesarticlesearch.utils;
 
-import com.google.common.net.MediaType;
 import com.google.gson.Gson;
 import com.minhnpa.coderschool.newyorktimesarticlesearch.BuildConfig;
 import com.minhnpa.coderschool.newyorktimesarticlesearch.model.ApiResponse;
-import com.minhnpa.coderschool.newyorktimesarticlesearch.model.Media;
 
 import java.io.IOException;
 
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-import static android.R.attr.apiKey;
 
 public class RetrofitUtils {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -44,9 +41,9 @@ public class RetrofitUtils {
             public Response intercept(Chain chain) throws IOException {
                 Request request = chain.request();
                 Response response = chain.proceed(request);
-                ResponseBody responseBody = response.body();
-                ApiResponse apiResponse = GSON.fromJson(responseBody.string(), ApiResponse.class);
-                responseBody.close();
+                ResponseBody body = response.body();
+                ApiResponse apiResponse = GSON.fromJson(body.string(), ApiResponse.class);
+                body.close();
                 return response.newBuilder()
                         .body(ResponseBody.create(JSON, apiResponse.getResponse().toString()))
                         .build();

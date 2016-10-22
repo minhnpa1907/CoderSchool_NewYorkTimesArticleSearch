@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        setUpSearchView(menuItem);
+        //setUpSearchView(menuItem);
         return super.onCreateOptionsMenu(menu);
     }
 
