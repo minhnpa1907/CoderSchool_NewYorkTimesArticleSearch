@@ -113,7 +113,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return mArticles.size();
     }
 
-    private class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.ivCover)
         ImageView ivCover;
 
@@ -126,7 +126,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    private class NoCoverViewHolder extends RecyclerView.ViewHolder {
+    public class NoCoverViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.tvContent)
         TextView tvContent;
 
