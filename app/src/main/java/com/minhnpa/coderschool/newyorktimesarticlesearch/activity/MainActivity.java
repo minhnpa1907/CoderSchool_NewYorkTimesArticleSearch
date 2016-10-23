@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -15,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.minhnpa.coderschool.newyorktimesarticlesearch.R;
@@ -24,8 +24,6 @@ import com.minhnpa.coderschool.newyorktimesarticlesearch.api.ArticleApi;
 import com.minhnpa.coderschool.newyorktimesarticlesearch.model.SearchRequest;
 import com.minhnpa.coderschool.newyorktimesarticlesearch.model.SearchResult;
 import com.minhnpa.coderschool.newyorktimesarticlesearch.utils.RetrofitUtils;
-
-import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,11 +51,14 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.rvArticle)
     RecyclerView rvArticle;
 
-    @BindView(R.id.pbLoading)
-    RelativeLayout pbLoading;
+    @BindView(R.id.vLoading)
+    View vLoading;
 
     @BindView(R.id.pbLoadMore)
     ProgressBar pbLoadMore;
+
+    @BindView(R.id.swipeContainer)
+    SwipeRefreshLayout swipeContainer;
 
     private interface Listener {
         void onResult(SearchResult searchResult);
@@ -73,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
         if (networkConnected) {
             setUpApi();
             setUpViews();
+            setUpPullToRefresh();
+            swipeContainer.setRefreshing(true);
             search();
         } else {
             Toast.makeText(this, "Can't connect to the network", Toast.LENGTH_LONG).show();
@@ -86,7 +89,22 @@ public class MainActivity extends AppCompatActivity {
         mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         rvArticle.setLayoutManager(mLayoutManager);
         rvArticle.setAdapter(mArticleAdapter);
+    }
 
+    private void setUpPullToRefresh() {
+        swipeContainer.setOnRefreshListener(() -> {
+            networkConnected = isNetworkAvailable();
+            if (networkConnected) {
+                search();
+            } else {
+                Toast.makeText(MainActivity.this,
+                        "Can't refresh. Please check your connection!", Toast.LENGTH_LONG).show();
+                swipeContainer.setRefreshing(false);
+            }
+        });
+        // Color
+        swipeContainer.setColorSchemeResources(R.color.colorPrimary,
+                R.color.colorPrimaryDark);
     }
 
     private void setUpApi() {
@@ -96,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void search() {
         mSearchRequest.resetPage();
-        pbLoading.setVisibility(View.VISIBLE);
+        vLoading.setVisibility(View.VISIBLE);
         fetchArticles(searchResult -> {
             mArticleAdapter.setArticle(searchResult.getArticles());
             rvArticle.scrollToPosition(0);
@@ -128,8 +146,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleComplete() {
-        pbLoading.setVisibility(View.GONE);
+        vLoading.setVisibility(View.GONE);
         pbLoadMore.setVisibility(View.GONE);
+        swipeContainer.setRefreshing(false);
     }
 
     @Override
@@ -145,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 mSearchRequest.setQuery(null);
+                swipeContainer.setRefreshing(true);
                 search();
                 return true;
             }
@@ -160,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 mSearchView.clearFocus();
                 mSearchRequest.setQuery(query);
+                swipeContainer.setRefreshing(true);
                 search();
                 return true;
             }
@@ -221,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
             mSearchRequest.setFilterArts(filterArts);
             mSearchRequest.setFilterFashionStyle(filterFashionStyle);
             mSearchRequest.setFilterSports(filterSports);
+            swipeContainer.setRefreshing(true);
             search();
         }
     }
